@@ -1,41 +1,46 @@
-<!DOCTYPE html>
+
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Kasir Supermart</title>
+    <title>Sistem Kasir RHN STORE - QRIS Edition</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { margin: 0; background-color: #eef2f5; display: flex; height: 100vh; overflow: hidden; }
-        :root { --primary: #005bb5; --secondary: #ffde00; --danger: #dc3545; --success: #28a745; --dark: #343a40; }
+        
+        :root { --primary: #005bb5; --secondary: #ffde00; --danger: #dc3545; --success: #28a745; --dark: #343a40; --light: #f8f9fa; }
 
-        .left-panel { width: 65%; padding: 20px; overflow-y: auto; background: #f8f9fa; }
-        .right-panel { width: 35%; background: white; border-left: 2px solid #ddd; display: flex; flex-direction: column; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
+        .main-app { display: flex; width: 100%; height: 100%; }
+
+        .left-panel { width: 63%; padding: 20px; overflow-y: auto; background: var(--light); }
+        .right-panel { width: 37%; background: white; border-left: 2px solid #ddd; display: flex; flex-direction: column; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--primary); color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header h1 { margin: 0; font-size: 24px; color: var(--secondary); }
+        .header-title h1 { margin: 0; font-size: 24px; color: var(--secondary); text-transform: uppercase; }
+        .clock { font-size: 16px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 5px; margin-top: 5px; display: inline-block; }
         
         .input-group { display: flex; gap: 10px; }
-        .barcode-input { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; width: 220px; }
-        .btn-scan { padding: 10px 15px; background: var(--secondary); color: var(--dark); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-scan:hover { background: #e6c800; }
+        .barcode-input { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; width: 200px; outline: none; }
+        .barcode-input:focus { border-color: var(--secondary); box-shadow: 0 0 5px var(--secondary); }
+        .btn-scan { padding: 10px 15px; background: var(--secondary); color: var(--dark); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-scan:hover { background: #e6c800; transform: scale(1.05); }
 
-        /* Kotak Kamera */
-        #reader-container { display: none; margin-bottom: 20px; background: white; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); }
+        #reader-container { display: none; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 2px solid var(--primary); }
         #reader { width: 100%; max-width: 400px; margin: auto; }
-        .btn-close-cam { background: var(--danger); color: white; border: none; padding: 8px; width: 100%; margin-top: 10px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .btn-close-cam { background: var(--danger); color: white; border: none; padding: 10px; width: 100%; margin-top: 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1px)); gap: 15px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .product-card { background: white; border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .product-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 4px 8px rgba(0,123,255,0.2); }
-        .product-card h3 { font-size: 16px; margin: 10px 0 5px; color: var(--dark); }
-        .product-card p { color: var(--primary); font-weight: bold; margin: 0; font-size: 18px; }
-        .product-card small { color: #888; font-size: 12px; }
+        .product-card h3 { font-size: 14px; margin: 10px 0 5px; color: var(--dark); }
+        .product-card p { color: var(--primary); font-weight: bold; margin: 0; font-size: 16px; }
+        .product-card small { color: #888; font-size: 11px; }
 
-        .cart-header { background: var(--dark); color: white; padding: 20px; text-align: center; }
-        .cart-header h2 { margin: 0; font-size: 20px; }
-        
+        .cart-header { background: var(--dark); color: white; padding: 15px; text-align: center; display: flex; justify-content: space-between; align-items: center; }
+        .cart-header h2 { margin: 0; font-size: 18px; }
+        .btn-clear { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
         .cart-items { flex-grow: 1; overflow-y: auto; padding: 10px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
         .cart-item-info { width: 60%; }
@@ -44,90 +49,213 @@
         .cart-item-total { font-weight: bold; color: var(--primary); }
         .btn-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 
-        .cart-summary { padding: 20px; background: #fdfdfd; border-top: 1px solid #ddd; }
-        .summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
-        .summary-total { font-size: 22px; font-weight: bold; color: var(--danger); border-top: 2px dashed #ccc; padding-top: 10px; margin-top: 10px; }
+        .cart-summary { padding: 10px 20px; background: #fdfdfd; border-top: 1px solid #ddd; }
+        .summary-line { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 15px; }
+        .summary-total { font-size: 20px; font-weight: bold; color: var(--danger); border-top: 2px dashed #ccc; padding-top: 10px; margin-top: 5px; }
         
-        .payment-input { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; margin: 10px 0; border: 2px solid var(--primary); border-radius: 5px; text-align: right; }
+        /* Area Metode Pembayaran */
+        .payment-methods { display: flex; gap: 5px; margin: 10px 0; }
+        .pay-option { flex: 1; text-align: center; padding: 8px 5px; border: 2px solid #ddd; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; background: white; transition: 0.2s; color: #555; }
+        .pay-option.active { border-color: var(--primary); background: #e6f2ff; color: var(--primary); }
+
+        /* Konten Pembayaran */
+        .pay-content { padding: 10px; border: 1px dashed #ccc; border-radius: 5px; margin-bottom: 10px; background: #fafafa; min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .payment-input { width: 100%; padding: 12px; font-size: 20px; font-weight: bold; border: 2px solid var(--primary); border-radius: 5px; text-align: right; }
         
-        .btn-pay { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; background: var(--success); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        /* Tombol Bayar */
+        .btn-pay { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; background: var(--success); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.2s; }
         .btn-pay:hover { background: #218838; }
+
+        /* Pop-Up Sukses & Kembalian */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: popIn 0.3s ease-out; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content h2 { color: var(--success); margin-top: 0; font-size: 28px; }
+        .change-amount { font-size: 40px; font-weight: bold; color: var(--primary); margin: 20px 0; border-bottom: 2px dashed #ccc; padding-bottom: 20px; }
+        .btn-close-modal { background: var(--dark); color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; }
+
+        /* AREA PRINT STRUK KASIR */
+        #printArea { display: none; font-family: 'Courier New', Courier, monospace; color: black; }
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .main-app, .modal-overlay { display: none !important; }
+            #printArea { display: block !important; position: absolute; top: 0; left: 0; width: 300px; padding: 10px; font-size: 12px; }
+            .print-header { text-align: center; margin-bottom: 10px; }
+            .print-header h2 { margin: 0; font-size: 18px; }
+            .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+            .print-table td { padding: 3px 0; }
+            .print-right { text-align: right; }
+            .print-bold { font-weight: bold; }
+            .print-line { border-bottom: 1px dashed black; margin: 8px 0; }
+            .print-footer { text-align: center; font-weight: bold; margin-top: 15px; font-size: 11px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="left-panel">
-        <div class="header">
-            <div>
-                <h1>🛒 SUPERMART POS</h1>
-                <small>Sistem Kasir + Kamera Scanner</small>
+    <div class="main-app">
+        <div class="left-panel">
+            <div class="header">
+                <div class="header-title">
+                    <h1>🛒 RHN STORE POS</h1>
+                    <div class="clock" id="realtimeClock">00:00:00</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="barcodeInput" class="barcode-input" placeholder="Scan / Ketik Kode..." autofocus autocomplete="off">
+                    <button class="btn-scan" onclick="bukaKamera()">📷 Scan Kamera</button>
+                </div>
             </div>
-            <div class="input-group">
-                <input type="text" id="barcodeInput" class="barcode-input" placeholder="Ketik Kode (Enter)..." autofocus>
-                <button class="btn-scan" onclick="bukaKamera()">📷 Scan</button>
+
+            <div id="reader-container">
+                <div id="reader"></div>
+                <button class="btn-close-cam" onclick="tutupKamera()">Tutup Kamera Scanner</button>
             </div>
+
+            <div class="product-grid" id="productGrid"></div>
         </div>
 
-        <div id="reader-container">
-            <div id="reader"></div>
-            <button class="btn-close-cam" onclick="tutupKamera()">Tutup Kamera</button>
-        </div>
+        <div class="right-panel">
+            <div class="cart-header">
+                <h2>Rincian Transaksi</h2>
+                <button class="btn-clear" onclick="kosongkanKeranjang()">🗑️ Batal</button>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <div style="text-align: center; color: #999; margin-top: 20px;">Belum ada barang</div>
+            </div>
 
-        <div class="product-grid" id="productGrid"></div>
+            <div class="cart-summary">
+                <div class="summary-line"><span>Subtotal</span><span id="subtotalText">Rp 0</span></div>
+                <div class="summary-line"><span>PPN (11%)</span><span id="ppnText">Rp 0</span></div>
+                <div class="summary-line summary-total"><span>TOTAL</span><span id="totalText" data-total="0">Rp 0</span></div>
+
+                <div class="payment-methods">
+                    <div class="pay-option active" id="btn-cash" onclick="gantiMetodeBayar('cash')">💵 Tunai</div>
+                    <div class="pay-option" id="btn-qris" onclick="gantiMetodeBayar('qris')">📱 QRIS / E-Wallet</div>
+                </div>
+
+                <div class="pay-content" id="area-cash">
+                    <input type="number" id="paymentInput" class="payment-input" placeholder="Nominal Uang (Rp)">
+                </div>
+                
+                <div class="pay-content" id="area-qris" style="display: none; text-align: center;">
+                    <span style="font-size: 11px; margin-bottom:5px; font-weight: bold;">Scan QRIS Asli RHN CAPITAL FINANCE:</span>
+                    
+                    <img src="qris.jpg" alt="QRIS RHN Store" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; margin: 5px 0;">
+                    
+                    <span style="font-size: 10px; color: #555;">NMID: ID1026489225353</span>
+                    <div style="margin-top: 5px; padding: 5px; background: #e6f2ff; border-radius: 5px; width: 100%;">
+                        <span style="font-size: 12px; color: #333;">Total yang harus dibayar:</span><br>
+                        <span style="font-size: 20px; font-weight: bold; color: var(--primary);" id="qrisAmountText">Rp 0</span>
+                    </div>
+                    <span style="font-size: 10px; color: var(--danger); margin-top: 5px;">*Pastikan pembeli mengisi nominal di atas dengan benar</span>
+                </div>
+                
+                <button class="btn-pay" onclick="prosesPembayaran()">PROSES BAYAR & CETAK</button>
+            </div>
+        </div>
     </div>
 
-    <div class="right-panel">
-        <div class="cart-header"><h2>Rincian Transaksi</h2></div>
-        <div class="cart-items" id="cartItems"><div style="text-align: center; color: #999; margin-top: 20px;">Belum ada barang</div></div>
-        <div class="cart-summary">
-            <div class="summary-line"><span>Subtotal</span><span id="subtotalText">Rp 0</span></div>
-            <div class="summary-line"><span>PPN (11%)</span><span id="ppnText">Rp 0</span></div>
-            <div class="summary-line summary-total"><span>TOTAL</span><span id="totalText" data-total="0">Rp 0</span></div>
-            <input type="number" id="paymentInput" class="payment-input" placeholder="Masukkan Uang Tunai (Rp)">
-            <button class="btn-pay" onclick="prosesPembayaran()">BAYAR & CETAK STRUK</button>
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">✅ TRANSAKSI SUKSES</h2>
+            <p id="modalSubtitle">Uang Kembalian Pelanggan:</p>
+            <div class="change-amount" id="changeAmountText">Rp 0</div>
+            <button class="btn-close-modal" onclick="tutupModalDanLanjut()">Lanjut Transaksi Berikutnya</button>
         </div>
     </div>
+
+    <div id="printArea"></div>
 
     <script>
-        const databaseProduk = [
-            // Tambahkan data barcode asli di bagian 'kode' kalau mau ditest scan langsung!
-            { kode: "89686010023", nama: "Aqua Botol 600ml", harga: 3500, stok: 50 },
-            { kode: "08968604321", nama: "Indomie Goreng", harga: 3500, stok: 100 },
-            { kode: "003", nama: "Susu Bear Brand", harga: 10500, stok: 30 },
-            { kode: "004", nama: "Roti Aoka Coklat", harga: 3000, stok: 40 }
-        ];
-
         let keranjang = [];
         let html5QrcodeScanner = null;
+        const ppnRate = 0.11;
+        let metodeAktif = 'cash'; // Default Tunai
 
+        // Jam Digital
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('realtimeClock').innerText = now.toLocaleTimeString('id-ID');
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // Database Produk (Contoh)
+        const databaseProduk = [
+            { kode: "89686010023", nama: "Aqua Botol 600ml", harga: 3500, stok: 999 },
+            { kode: "08968604321", nama: "Indomie Goreng", harga: 3500, stok: 999 },
+            { kode: "003", nama: "Susu Bear Brand", harga: 10500, stok: 999 },
+            { kode: "004", nama: "Roti Aoka Coklat", harga: 3000, stok: 999 },
+            { kode: "005", nama: "Chitato Sapi 68g", harga: 11000, stok: 999 },
+            { kode: "006", nama: "Kopi Kenangan 220ml", harga: 9500, stok: 999 }
+        ];
+
+        // Suara Beep
+        function playBeepSound() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = context.createOscillator();
+            const gain = context.createGain();
+            osc.type = "sine"; osc.frequency.value = 1350; 
+            gain.gain.setValueAtTime(0.3, context.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.08); 
+            osc.connect(gain); gain.connect(context.destination);
+            osc.start(); osc.stop(context.currentTime + 0.08);
+        }
+
+        // Suara Google TTS
+        function bicarakanTerimaKasih() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const ucapan = new SpeechSynthesisUtterance("Terima kasih telah berbelanja di r h n store");
+                ucapan.lang = 'id-ID'; ucapan.pitch = 1.1; ucapan.rate = 1.0;     
+                window.speechSynthesis.speak(ucapan);
+            }
+        }
+
+        // Format Uang
         function formatRupiah(angka) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
+
+        // --- FUNGSI GANTI METODE PEMBAYARAN ---
+        function gantiMetodeBayar(metode) {
+            metodeAktif = metode;
+            
+            document.getElementById('btn-cash').classList.remove('active');
+            document.getElementById('btn-qris').classList.remove('active');
+            
+            document.getElementById('area-cash').style.display = 'none';
+            document.getElementById('area-qris').style.display = 'none';
+
+            document.getElementById('btn-' + metode).classList.add('active');
+            if (metode === 'cash') {
+                document.getElementById('area-cash').style.display = 'block';
+                setTimeout(() => document.getElementById('paymentInput').focus(), 100);
+            } else if (metode === 'qris') {
+                document.getElementById('area-qris').style.display = 'flex';
+            }
         }
 
         function renderProduk() {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
             databaseProduk.forEach(produk => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.onclick = () => tambahKeKeranjang(produk.kode);
-                card.innerHTML = `<h3>${produk.nama}</h3><p>${formatRupiah(produk.harga)}</p><small>Kode: ${produk.kode}</small>`;
-                grid.appendChild(card);
+                grid.innerHTML += `
+                    <div class="product-card" onclick="tambahKeKeranjang('${produk.kode}')">
+                        <h3>${produk.nama}</h3>
+                        <p>${formatRupiah(produk.harga)}</p>
+                        <small>Kode: ${produk.kode}</small>
+                    </div>`;
             });
         }
 
         function tambahKeKeranjang(kode) {
             const produk = databaseProduk.find(p => p.kode === kode);
-            if (!produk) { alert("Produk dengan kode " + kode + " tidak ditemukan!"); return; }
-
+            if (!produk) { alert("Produk tidak ditemukan!"); return; }
             const item = keranjang.find(i => i.kode === kode);
-            if (item) {
-                item.qty += 1;
-                item.subtotal = item.qty * item.harga;
-            } else {
-                keranjang.push({ kode: produk.kode, nama: produk.nama, harga: produk.harga, qty: 1, subtotal: produk.harga });
-            }
-            updateUIKeranjang();
+            if (item) item.qty += 1, item.subtotal = item.qty * item.harga;
+            else keranjang.push({ ...produk, qty: 1, subtotal: produk.harga });
+            playBeepSound(); updateUIKeranjang();
         }
 
         function hapusDariKeranjang(kode) {
@@ -135,86 +263,136 @@
             updateUIKeranjang();
         }
 
+        function kosongkanKeranjang() {
+            if(confirm("Yakin batalkan transaksi?")) {
+                keranjang = []; document.getElementById('paymentInput').value = ''; updateUIKeranjang();
+            }
+        }
+
         function updateUIKeranjang() {
             const container = document.getElementById('cartItems');
-            container.innerHTML = '';
-            let subtotal = 0;
-
-            if (keranjang.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #999; margin-top: 20px;">Belum ada barang</div>';
-            } else {
-                keranjang.forEach(item => {
-                    subtotal += item.subtotal;
-                    container.innerHTML += `
-                        <div class="cart-item">
-                            <div class="cart-item-info">
-                                <div class="cart-item-name">${item.nama}</div>
-                                <div class="cart-item-qty">${item.qty} x ${formatRupiah(item.harga)}</div>
-                            </div>
-                            <div class="cart-item-total">${formatRupiah(item.subtotal)}</div>
-                            <button class="btn-del" onclick="hapusDariKeranjang('${item.kode}')">X</button>
+            container.innerHTML = ''; let subtotal = 0;
+            if (keranjang.length === 0) container.innerHTML = '<div style="text-align: center; color: #999; margin-top: 20px;">Belum ada barang</div>';
+            else keranjang.forEach(item => {
+                subtotal += item.subtotal;
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.nama}</div>
+                            <div class="cart-item-qty">${item.qty} x ${formatRupiah(item.harga)}</div>
                         </div>
-                    `;
-                });
-            }
-
-            const ppn = subtotal * 0.11;
+                        <div class="cart-item-total">${formatRupiah(item.subtotal)}</div>
+                        <button class="btn-del" onclick="hapusDariKeranjang('${item.kode}')">X</button>
+                    </div>`;
+            });
+            
+            const ppn = subtotal * ppnRate;
             const total = subtotal + ppn;
-
+            
             document.getElementById('subtotalText').innerText = formatRupiah(subtotal);
             document.getElementById('ppnText').innerText = formatRupiah(ppn);
             document.getElementById('totalText').innerText = formatRupiah(total);
             document.getElementById('totalText').setAttribute('data-total', total);
+            
+            // Update nominal dinamis di bawah logo QRIS
+            document.getElementById('qrisAmountText').innerText = formatRupiah(total);
         }
 
         document.getElementById('barcodeInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && this.value.trim() !== "") {
-                tambahKeKeranjang(this.value.trim());
-                this.value = ''; 
+                tambahKeKeranjang(this.value.trim()); this.value = '';
             }
         });
 
-        // --- FITUR KAMERA SCANNER BARCODE ---
+        // Kamera Scanner
         function bukaKamera() {
             document.getElementById('reader-container').style.display = 'block';
-            if (!html5QrcodeScanner) {
-                html5QrcodeScanner = new Html5Qrcode("reader");
-            }
-            html5QrcodeScanner.start(
-                { facingMode: "environment" }, // Pakai kamera belakang (kalau ada)
-                { fps: 10, qrbox: {width: 250, height: 150} },
-                (decodedText) => {
-                    // Berhasil scan!
-                    tutupKamera();
-                    tambahKeKeranjang(decodedText);
-                    // Bunyi Beep Kasir
-                    let audio = new Audio('https://www.soundjay.com/buttons/beep-07.wav');
-                    audio.play();
-                },
-                (errorMessage) => { /* Abaikan error saat proses mencari barcode */ }
-            ).catch(err => {
-                alert("Gagal membuka kamera: " + err);
-                tutupKamera();
-            });
+            if (!html5QrcodeScanner) html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: {width: 250, height: 150} },
+                (decodedText) => { tutupKamera(); tambahKeKeranjang(decodedText); }, (err) => {}
+            ).catch(() => { alert("Gagal buka kamera."); tutupKamera(); });
         }
-
         function tutupKamera() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    document.getElementById('reader-container').style.display = 'none';
-                }).catch(err => console.log(err));
-            } else {
-                document.getElementById('reader-container').style.display = 'none';
-            }
+            if (html5QrcodeScanner) html5QrcodeScanner.stop().then(() => document.getElementById('reader-container').style.display = 'none');
+            else document.getElementById('reader-container').style.display = 'none';
         }
 
+        // --- PROSES PEMBAYARAN ---
         function prosesPembayaran() {
             if (keranjang.length === 0) { alert("Keranjang kosong!"); return; }
-            const total = parseFloat(document.getElementById('totalText').getAttribute('data-total'));
-            const bayar = parseFloat(document.getElementById('paymentInput').value);
-            if (isNaN(bayar) || bayar < total) { alert("Uang kurang!"); return; }
-            alert("Pembayaran Berhasil! Kembalian: " + formatRupiah(bayar - total) + "\n\n(Struk akan di-print otomatis)");
-            keranjang = []; document.getElementById('paymentInput').value = ''; updateUIKeranjang();
+            
+            const totalTagihan = parseFloat(document.getElementById('totalText').getAttribute('data-total'));
+            let uangBayar = 0;
+            let kembalian = 0;
+            let teksMetodeStruk = "";
+
+            if (metodeAktif === 'cash') {
+                uangBayar = parseFloat(document.getElementById('paymentInput').value);
+                if (isNaN(uangBayar) || uangBayar < totalTagihan) {
+                    alert("Nominal uang tunai kurang!"); return;
+                }
+                kembalian = uangBayar - totalTagihan;
+                teksMetodeStruk = "TUNAI";
+                
+                document.getElementById('modalSubtitle').innerText = "Uang Kembalian Pelanggan:";
+                document.getElementById('changeAmountText').innerText = formatRupiah(kembalian);
+
+            } else if (metodeAktif === 'qris') {
+                // Dianggap sudah dibayar pas dengan QRIS
+                uangBayar = totalTagihan;
+                kembalian = 0;
+                teksMetodeStruk = "QRIS / E-WALLET";
+                
+                document.getElementById('modalSubtitle').innerText = "Pembayaran via QRIS Berhasil";
+                document.getElementById('changeAmountText').innerText = "LUNAS";
+            }
+
+            document.getElementById('successModal').style.display = 'flex';
+            bicarakanTerimaKasih();
+            siapkanStrukPrint(totalTagihan, uangBayar, kembalian, teksMetodeStruk);
+
+            setTimeout(() => { window.print(); }, 800);
+        }
+
+        function siapkanStrukPrint(total, bayar, kembali, tipePembayaran) {
+            let isiStruk = `
+                <div class="print-header">
+                    <h2>RHN STORE</h2>
+                    <div>Jl. Teknologi No. 99, Jakarta</div>
+                    <div style="font-size: 10px; margin-top: 3px;">Tanggal: ${new Date().toLocaleString('id-ID')}</div>
+                </div>
+                <div class="print-line"></div>
+                <table class="print-table">
+            `;
+            let subtotal = 0;
+            keranjang.forEach(item => {
+                subtotal += item.subtotal;
+                isiStruk += `<tr><td colspan="2" class="print-bold">${item.nama}</td></tr>
+                             <tr><td>${item.qty} x ${item.harga}</td><td class="print-right">${item.subtotal}</td></tr>`;
+            });
+            const ppn = subtotal * ppnRate;
+            isiStruk += `
+                </table>
+                <div class="print-line"></div>
+                <table class="print-table">
+                    <tr><td>Subtotal</td><td class="print-right">${formatRupiah(subtotal)}</td></tr>
+                    <tr><td>PPN 11%</td><td class="print-right">${formatRupiah(ppn)}</td></tr>
+                    <tr class="print-bold" style="font-size: 14px;"><td>TOTAL</td><td class="print-right">${formatRupiah(total)}</td></tr>
+                    <tr><td style="font-size:11px;">BAYAR (${tipePembayaran})</td><td class="print-right">${formatRupiah(bayar)}</td></tr>
+                    <tr><td>KEMBALI</td><td class="print-right">${formatRupiah(kembali)}</td></tr>
+                </table>
+                <div class="print-line"></div>
+                <div class="print-footer">Terima kasih telah belanja di toko RHN STORE<br>Barang yang dibeli tidak dapat ditukar.</div>
+            `;
+            document.getElementById('printArea').innerHTML = isiStruk;
+        }
+
+        function tutupModalDanLanjut() {
+            document.getElementById('successModal').style.display = 'none';
+            keranjang = []; 
+            document.getElementById('paymentInput').value = ''; 
+            updateUIKeranjang();
+            document.getElementById('barcodeInput').focus();
         }
 
         window.onload = function() { renderProduk(); document.getElementById('barcodeInput').focus(); };
