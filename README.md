@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -82,31 +82,12 @@
 
         #printArea { display: none; font-family: 'Courier New', Courier, monospace; color: black; }
 
-        /* ----- DIPERBARUI: HANYA BERLAKU DI LAYAR (SCREEN) BUKAN SAAT PRINT ----- */
+        /* ----- ATURAN LAYAR HP ----- */
         @media screen and (max-width: 1024px) {
-            body { 
-                height: auto !important; 
-                overflow-y: auto !important; 
-                display: block !important;
-            }
-            .main-app { 
-                flex-direction: column !important; 
-                height: auto !important; 
-                display: flex !important;
-            }
-            .left-panel { 
-                width: 100% !important; 
-                height: auto !important; 
-                overflow: visible !important; 
-                padding: 10px !important;
-            }
-            .right-panel { 
-                width: 100% !important; 
-                height: auto !important; 
-                border-left: none !important;
-                border-top: 4px solid var(--primary) !important;
-                box-shadow: 0 -4px 10px rgba(0,0,0,0.1) !important;
-            }
+            body { height: auto !important; overflow-y: auto !important; display: block !important; }
+            .main-app { flex-direction: column !important; height: auto !important; display: flex !important; }
+            .left-panel { width: 100% !important; height: auto !important; overflow: visible !important; padding: 10px !important; }
+            .right-panel { width: 100% !important; height: auto !important; border-left: none !important; border-top: 4px solid var(--primary) !important; box-shadow: 0 -4px 10px rgba(0,0,0,0.1) !important; }
             .header { flex-direction: column; text-align: center; gap: 10px; }
             .input-group { width: 100%; flex-direction: column; }
             .barcode-input, .btn-scan, .btn-add { width: 100%; }
@@ -115,11 +96,19 @@
             .modal-content { width: 90%; padding: 20px; }
         }
 
-        /* ----- DIPERBARUI: POSISI PRINT DI BAWAH AGAR MENANG MUTLAK ----- */
+        /* ----- ATURAN KHUSUS CETAK STRUK KASIR (PRINT) ----- */
         @media print {
-            body { background: white !important; margin: 0 !important; padding: 0 !important; }
+            /* MENGHILANGKAN HEADER/FOOTER (LINK URL & TANGGAL) DARI BROWSER */
+            @page { margin: 0; size: auto; }
+            
+            body { background: white !important; margin: 0 !important; padding: 15px !important; }
+            
+            /* Sembunyikan semua elemen aplikasi */
             .main-app, .modal-overlay { display: none !important; }
-            #printArea { display: block !important; position: absolute; top: 0; left: 0; width: 100%; max-width: 300px; padding: 10px; font-size: 12px; }
+            
+            /* Tampilkan HANYA area struk */
+            #printArea { display: block !important; position: relative; width: 100%; max-width: 300px; margin: 0 auto; font-size: 12px; }
+            
             .print-header { text-align: center; margin-bottom: 10px; }
             .print-header h2 { margin: 0; font-size: 18px; }
             .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
