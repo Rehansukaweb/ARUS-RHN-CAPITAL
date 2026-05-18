@@ -27,7 +27,6 @@
         .btn-scan { padding: 10px 15px; background: var(--secondary); color: var(--dark); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-scan:hover { background: #e6c800; transform: scale(1.05); }
         
-        /* Tombol Tambah Barang */
         .btn-add { padding: 10px 15px; background: var(--success); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-add:hover { background: #218838; transform: scale(1.05); }
 
@@ -37,14 +36,12 @@
 
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         
-        /* Edit Kartu Produk untuk Tombol Hapus */
         .product-card { position: relative; background: white; border-radius: 8px; padding: 25px 15px 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .product-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 4px 8px rgba(0,123,255,0.2); }
         .product-card h3 { font-size: 14px; margin: 5px 0; color: var(--dark); }
         .product-card p { color: var(--primary); font-weight: bold; margin: 0; font-size: 16px; }
         .product-card small { color: #888; font-size: 11px; }
 
-        /* Tombol Hapus Produk dari Database */
         .btn-delete-product { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 4px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .btn-delete-product:hover { background: #b02a37; transform: scale(1.1); }
 
@@ -98,17 +95,37 @@
             .print-footer { text-align: center; font-weight: bold; margin-top: 15px; font-size: 11px; }
         }
 
-        @media (max-width: 768px) {
-            body { height: auto; overflow: auto; }
-            .main-app { flex-direction: column; height: auto; }
-            .left-panel, .right-panel { width: 100%; height: auto; overflow: visible; border: none; }
-            .right-panel { border-top: 3px solid var(--primary); }
-            .header { flex-direction: column; text-align: center; gap: 15px; }
+        /* ----- DIPERBARUI: PERBAIKAN TAMPILAN HP AGAR BISA SCROLL & TIDAK KEPOTONG ----- */
+        @media (max-width: 1024px) {
+            body { 
+                height: auto !important; 
+                overflow-y: auto !important; 
+                display: block !important;
+            }
+            .main-app { 
+                flex-direction: column !important; 
+                height: auto !important; 
+                display: flex !important;
+            }
+            .left-panel { 
+                width: 100% !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                padding: 10px !important;
+            }
+            .right-panel { 
+                width: 100% !important; 
+                height: auto !important; 
+                border-left: none !important;
+                border-top: 4px solid var(--primary) !important;
+                box-shadow: 0 -4px 10px rgba(0,0,0,0.1) !important;
+            }
+            .header { flex-direction: column; text-align: center; gap: 10px; }
             .input-group { width: 100%; flex-direction: column; }
             .barcode-input, .btn-scan, .btn-add { width: 100%; }
-            .product-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+            .cart-items { min-height: 150px; max-height: 400px; }
             .modal-content { width: 90%; padding: 20px; }
-            .cart-items { min-height: 200px; max-height: 350px; }
         }
     </style>
 </head>
@@ -124,7 +141,6 @@
                 <div class="input-group">
                     <input type="text" id="barcodeInput" class="barcode-input" placeholder="Scan / Ketik Kode..." autofocus autocomplete="off">
                     <button class="btn-scan" onclick="bukaKamera()">📷 Scan Kamera</button>
-                    <!-- Tombol Tambah Barang -->
                     <button class="btn-add" onclick="bukaModalTambah()">➕ Tambah Barang</button>
                 </div>
             </div>
@@ -177,7 +193,6 @@
         </div>
     </div>
 
-    <!-- Modal Sukses Pembayaran -->
     <div class="modal-overlay" id="successModal">
         <div class="modal-content">
             <h2 id="modalTitle" style="color: var(--success);">✅ TRANSAKSI SUKSES</h2>
@@ -187,7 +202,6 @@
         </div>
     </div>
 
-    <!-- Modal Tambah Barang Baru -->
     <div class="modal-overlay" id="tambahBarangModal">
         <div class="modal-content">
             <h2 style="color: var(--primary);">➕ Tambah Barang</h2>
@@ -210,14 +224,12 @@
         const ppnRate = 0.11;
         let metodeAktif = 'cash'; 
 
-        // Jam Digital
         function updateClock() {
             const now = new Date();
             document.getElementById('realtimeClock').innerText = now.toLocaleTimeString('id-ID');
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // Database Produk (Dengan Tambahan Baru)
         let databaseProduk = [
             { kode: "89686010023", nama: "Aqua Botol 600ml", harga: 3500, stok: 999 },
             { kode: "08968604321", nama: "Indomie Goreng", harga: 3500, stok: 999 },
@@ -257,7 +269,6 @@
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
         }
 
-        // --- FUNGSI TAMBAH BARANG BARU ---
         function bukaModalTambah() {
             document.getElementById('tambahBarangModal').style.display = 'flex';
             document.getElementById('inputKodeBaru').focus();
@@ -293,18 +304,11 @@
             alert("✅ Barang Baru Berhasil Ditambahkan!");
         }
 
-        // --- FUNGSI HAPUS BARANG DARI DATABASE ---
         function hapusBarangDariSistem(event, kode) {
-            // Mencegah div pembungkus (product-card) ikut ter-klik dan masuk ke keranjang
             event.stopPropagation(); 
-            
             if (confirm("Yakin ingin menghapus barang ini secara permanen dari layar?")) {
-                // Filter hapus dari database
                 databaseProduk = databaseProduk.filter(p => p.kode !== kode);
-                
-                // Jika kebetulan barangnya lagi ada di keranjang transaksi, hapus sekalian
                 keranjang = keranjang.filter(item => item.kode !== kode);
-                
                 updateUIKeranjang();
                 renderProduk();
             }
@@ -325,7 +329,6 @@
             }
         }
 
-        // --- RENDER PRODUK (DIUPDATE AGAR MUNCUL TOMBOL X) ---
         function renderProduk() {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
