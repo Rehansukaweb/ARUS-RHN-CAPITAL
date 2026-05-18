@@ -1,342 +1,223 @@
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>RHN CAPITAL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kasir Supermart</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; background-color: #eef2f5; display: flex; height: 100vh; overflow: hidden; }
+        :root { --primary: #005bb5; --secondary: #ffde00; --danger: #dc3545; --success: #28a745; --dark: #343a40; }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+        .left-panel { width: 65%; padding: 20px; overflow-y: auto; background: #f8f9fa; }
+        .right-panel { width: 35%; background: white; border-left: 2px solid #ddd; display: flex; flex-direction: column; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
 
-<style>
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--primary); color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 24px; color: var(--secondary); }
+        
+        .input-group { display: flex; gap: 10px; }
+        .barcode-input { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; width: 220px; }
+        .btn-scan { padding: 10px 15px; background: var(--secondary); color: var(--dark); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-scan:hover { background: #e6c800; }
 
-/* ===== GLOBAL ===== */
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter;}
+        /* Kotak Kamera */
+        #reader-container { display: none; margin-bottom: 20px; background: white; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); }
+        #reader { width: 100%; max-width: 400px; margin: auto; }
+        .btn-close-cam { background: var(--danger); color: white; border: none; padding: 8px; width: 100%; margin-top: 10px; cursor: pointer; border-radius: 5px; font-weight: bold; }
 
-body{
-background:linear-gradient(180deg,#020617,#0f172a);
-color:white;
-overflow-x:hidden;
-}
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1px)); gap: 15px; }
+        .product-card { background: white; border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .product-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 4px 8px rgba(0,123,255,0.2); }
+        .product-card h3 { font-size: 16px; margin: 10px 0 5px; color: var(--dark); }
+        .product-card p { color: var(--primary); font-weight: bold; margin: 0; font-size: 18px; }
+        .product-card small { color: #888; font-size: 12px; }
 
-/* ===== NAVBAR ===== */
-header{
-position:fixed;
-width:100%;
-top:0;
-background:rgba(2,6,23,.75);
-backdrop-filter:blur(10px);
-border-bottom:1px solid #1f2937;
-z-index:999;
-}
+        .cart-header { background: var(--dark); color: white; padding: 20px; text-align: center; }
+        .cart-header h2 { margin: 0; font-size: 20px; }
+        
+        .cart-items { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .cart-item-info { width: 60%; }
+        .cart-item-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .cart-item-qty { font-size: 12px; color: #666; }
+        .cart-item-total { font-weight: bold; color: var(--primary); }
+        .btn-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 
-.nav{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px 25px;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.logo img{
-width:42px;
-filter:drop-shadow(0 0 10px #22c55e88);
-}
-
-.menu button{
-background:none;
-border:none;
-color:#9ca3af;
-margin-left:15px;
-cursor:pointer;
-}
-
-.menu button:hover{color:#22c55e;}
-
-/* ===== HERO ===== */
-.hero{
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:20px;
-}
-
-.hero img{
-width:500px;
-margin-bottom:20px;
-animation:float 4s infinite ease-in-out;
-}
-
-@keyframes float{
-0%{transform:translateY(0);}
-50%{transform:translateY(-10px);}
-100%{transform:translateY(0);}
-}
-
-.hero h1{
-font-size:46px;
-margin-bottom:10px;
-}
-
-.hero p{
-max-width:700px;
-color:#94a3b8;
-}
-
-.btn{
-margin-top:25px;
-padding:15px 32px;
-border:none;
-border-radius:12px;
-background:linear-gradient(135deg,#22c55e,#16a34a);
-cursor:pointer;
-font-weight:600;
-transition:.3s;
-}
-
-.btn:hover{
-transform:scale(1.08);
-box-shadow:0 0 40px #22c55e88;
-}
-
-/* ===== SECTION ===== */
-.section{
-padding:110px 20px;
-max-width:1100px;
-margin:auto;
-text-align:center;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:25px;
-}
-
-.card{
-background:#020617;
-border:1px solid #1f2937;
-border-radius:18px;
-padding:25px;
-cursor:pointer;
-transition:.4s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-box-shadow:0 0 35px rgba(34,197,94,.25);
-}
-
-.action{
-margin-top:15px;
-padding:12px;
-background:#22c55e;
-border-radius:10px;
-color:black;
-font-weight:bold;
-}
-
-/* ===== QRIS POPUP ===== */
-.popup{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.85);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:1000;
-}
-
-.popup img{
-width:300px;
-border-radius:12px;
-}
-
-.close{
-position:absolute;
-top:20px;
-right:30px;
-font-size:25px;
-cursor:pointer;
-}
-
-/* ===== FOOTER ===== */
-footer{
-text-align:center;
-padding:30px;
-color:#6b7280;
-}
-
-</style>
+        .cart-summary { padding: 20px; background: #fdfdfd; border-top: 1px solid #ddd; }
+        .summary-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
+        .summary-total { font-size: 22px; font-weight: bold; color: var(--danger); border-top: 2px dashed #ccc; padding-top: 10px; margin-top: 10px; }
+        
+        .payment-input { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; margin: 10px 0; border: 2px solid var(--primary); border-radius: 5px; text-align: right; }
+        
+        .btn-pay { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; background: var(--success); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .btn-pay:hover { background: #218838; }
+    </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<header>
-<div class="nav">
-<div class="logo">
-<img src="RHN LOGO.jpg">
-<b>RHN CAPITAL</b>
-</div>
+    <div class="left-panel">
+        <div class="header">
+            <div>
+                <h1>🛒 SUPERMART POS</h1>
+                <small>Sistem Kasir + Kamera Scanner</small>
+            </div>
+            <div class="input-group">
+                <input type="text" id="barcodeInput" class="barcode-input" placeholder="Ketik Kode (Enter)..." autofocus>
+                <button class="btn-scan" onclick="bukaKamera()">📷 Scan</button>
+            </div>
+        </div>
 
-<div class="menu">
-<button onclick="scrollTo('about')">About</button>
-<button onclick="scrollTo('services')">Services</button>
-<button onclick="scrollTo('premium')">Premium</button>
-<button onclick="scrollTo('contact')">Contact</button>
-</div>
-</div>
-</header>
+        <div id="reader-container">
+            <div id="reader"></div>
+            <button class="btn-close-cam" onclick="tutupKamera()">Tutup Kamera</button>
+        </div>
 
-<!-- HERO -->
-<section class="hero">
+        <div class="product-grid" id="productGrid"></div>
+    </div>
 
-<img src="RHN LOGO.jpg">
+    <div class="right-panel">
+        <div class="cart-header"><h2>Rincian Transaksi</h2></div>
+        <div class="cart-items" id="cartItems"><div style="text-align: center; color: #999; margin-top: 20px;">Belum ada barang</div></div>
+        <div class="cart-summary">
+            <div class="summary-line"><span>Subtotal</span><span id="subtotalText">Rp 0</span></div>
+            <div class="summary-line"><span>PPN (11%)</span><span id="ppnText">Rp 0</span></div>
+            <div class="summary-line summary-total"><span>TOTAL</span><span id="totalText" data-total="0">Rp 0</span></div>
+            <input type="number" id="paymentInput" class="payment-input" placeholder="Masukkan Uang Tunai (Rp)">
+            <button class="btn-pay" onclick="prosesPembayaran()">BAYAR & CETAK STRUK</button>
+        </div>
+    </div>
 
-<h1>RHN CAPITAL</h1>
+    <script>
+        const databaseProduk = [
+            // Tambahkan data barcode asli di bagian 'kode' kalau mau ditest scan langsung!
+            { kode: "89686010023", nama: "Aqua Botol 600ml", harga: 3500, stok: 50 },
+            { kode: "08968604321", nama: "Indomie Goreng", harga: 3500, stok: 100 },
+            { kode: "003", nama: "Susu Bear Brand", harga: 10500, stok: 30 },
+            { kode: "004", nama: "Roti Aoka Coklat", harga: 3000, stok: 40 }
+        ];
 
-<p>
-RHN Capital adalah platform investasi modern yang berfokus pada
-analisa pasar saham, cryptocurrency, dan trading forex berbasis
-strategi makro ekonomi global serta manajemen risiko profesional.
-Kami membantu investor memahami market cycle,
-mengembangkan capital growth, dan membangun sistem trading disiplin.
-</p>
+        let keranjang = [];
+        let html5QrcodeScanner = null;
 
-<button class="btn"
-onclick="window.open('https://wa.me/6285717426626','_blank')">
-Konsultasi Sekarang
-</button>
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
 
-</section>
+        function renderProduk() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            databaseProduk.forEach(produk => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => tambahKeKeranjang(produk.kode);
+                card.innerHTML = `<h3>${produk.nama}</h3><p>${formatRupiah(produk.harga)}</p><small>Kode: ${produk.kode}</small>`;
+                grid.appendChild(card);
+            });
+        }
 
-<!-- ABOUT -->
-<section id="about" class="section">
+        function tambahKeKeranjang(kode) {
+            const produk = databaseProduk.find(p => p.kode === kode);
+            if (!produk) { alert("Produk dengan kode " + kode + " tidak ditemukan!"); return; }
 
-<h2>Tentang RHN Capital</h2>
+            const item = keranjang.find(i => i.kode === kode);
+            if (item) {
+                item.qty += 1;
+                item.subtotal = item.qty * item.harga;
+            } else {
+                keranjang.push({ kode: produk.kode, nama: produk.nama, harga: produk.harga, qty: 1, subtotal: produk.harga });
+            }
+            updateUIKeranjang();
+        }
 
-<p>
-RHN Capital menggabungkan pendekatan investasi modern dengan analisa
-teknikal, fundamental, dan makro ekonomi global. Fokus utama kami
-adalah pertumbuhan aset jangka panjang melalui strategi probabilitas,
-risk management ketat, dan pemahaman siklus finansial dunia.
-</p>
+        function hapusDariKeranjang(kode) {
+            keranjang = keranjang.filter(item => item.kode !== kode);
+            updateUIKeranjang();
+        }
 
-<br>
+        function updateUIKeranjang() {
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '';
+            let subtotal = 0;
 
-<p>
-Fokus investasi meliputi:
-Crypto Asset • Saham Global & Indonesia • Trading Forex • Market Psychology • Portfolio Strategy.
-</p>
+            if (keranjang.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; margin-top: 20px;">Belum ada barang</div>';
+            } else {
+                keranjang.forEach(item => {
+                    subtotal += item.subtotal;
+                    container.innerHTML += `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.nama}</div>
+                                <div class="cart-item-qty">${item.qty} x ${formatRupiah(item.harga)}</div>
+                            </div>
+                            <div class="cart-item-total">${formatRupiah(item.subtotal)}</div>
+                            <button class="btn-del" onclick="hapusDariKeranjang('${item.kode}')">X</button>
+                        </div>
+                    `;
+                });
+            }
 
-</section>
+            const ppn = subtotal * 0.11;
+            const total = subtotal + ppn;
 
-<!-- SERVICES -->
-<section id="services" class="section">
+            document.getElementById('subtotalText').innerText = formatRupiah(subtotal);
+            document.getElementById('ppnText').innerText = formatRupiah(ppn);
+            document.getElementById('totalText').innerText = formatRupiah(total);
+            document.getElementById('totalText').setAttribute('data-total', total);
+        }
 
-<h2>Layanan Platform</h2>
+        document.getElementById('barcodeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim() !== "") {
+                tambahKeKeranjang(this.value.trim());
+                this.value = ''; 
+            }
+        });
 
-<div class="grid">
+        // --- FITUR KAMERA SCANNER BARCODE ---
+        function bukaKamera() {
+            document.getElementById('reader-container').style.display = 'block';
+            if (!html5QrcodeScanner) {
+                html5QrcodeScanner = new Html5Qrcode("reader");
+            }
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Pakai kamera belakang (kalau ada)
+                { fps: 10, qrbox: {width: 250, height: 150} },
+                (decodedText) => {
+                    // Berhasil scan!
+                    tutupKamera();
+                    tambahKeKeranjang(decodedText);
+                    // Bunyi Beep Kasir
+                    let audio = new Audio('https://www.soundjay.com/buttons/beep-07.wav');
+                    audio.play();
+                },
+                (errorMessage) => { /* Abaikan error saat proses mencari barcode */ }
+            ).catch(err => {
+                alert("Gagal membuka kamera: " + err);
+                tutupKamera();
+            });
+        }
 
-<div class="card" onclick="window.location.href='ANALISACRYPTO.html'">
-<h3>₿ Analisa Crypto</h3>
-<p>Market cycle & Bitcoin strategy.</p>
-<div class="action">Buka</div>
-</div>
+        function tutupKamera() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('reader-container').style.display = 'none';
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('reader-container').style.display = 'none';
+            }
+        }
 
-<div class="card" onclick="window.location.href='ANALISASAHAM.html'">
-<h3>📈 Analisa Saham</h3>
-<p>Valuasi & momentum market.</p>
-<div class="action">Buka</div>
-</div>
+        function prosesPembayaran() {
+            if (keranjang.length === 0) { alert("Keranjang kosong!"); return; }
+            const total = parseFloat(document.getElementById('totalText').getAttribute('data-total'));
+            const bayar = parseFloat(document.getElementById('paymentInput').value);
+            if (isNaN(bayar) || bayar < total) { alert("Uang kurang!"); return; }
+            alert("Pembayaran Berhasil! Kembalian: " + formatRupiah(bayar - total) + "\n\n(Struk akan di-print otomatis)");
+            keranjang = []; document.getElementById('paymentInput').value = ''; updateUIKeranjang();
+        }
 
-<div class="card" onclick="window.location.href='ANALISAFOREX.html'">
-<h3>💱 Trading Forex</h3>
-<p>Risk reward & macro analysis.</p>
-<div class="action">Buka</div>
-</div>
-
-</div>
-
-</section>
-
-<!-- PREMIUM ACCESS -->
-<section id="premium" class="section">
-
-<h2>Akses Premium RHN Capital</h2>
-
-<p>
-Akses materi eksklusif, analisa mendalam, dan strategi market profesional.
-</p>
-
-<br>
-
-<button class="btn" onclick="openQRIS()">
-💳 Bayar Akses Premium
-</button>
-
-<br><br>
-
-<button class="btn" onclick="alert('Akses Dibuka Setelah Pembayaran')">
-🔐 Masuk Member Area
-</button>
-
-</section>
-
-<!-- CONTACT -->
-<section id="contact" class="section">
-
-<h2>Kontak</h2>
-
-<button class="btn" onclick="window.open('https://wa.me/6285717426626')">
-WhatsApp
-</button>
-
-<button class="btn" onclick="window.open('https://instagram.com/huyrehan')">
-Instagram
-</button>
-
-<button class="btn" onclick="window.open('https://tiktok.com/@rehanhuy')">
-TikTok
-</button>
-
-</section>
-
-<!-- QRIS POPUP -->
-<div class="popup" id="qrisPopup">
-<div class="close" onclick="closeQRIS()">✕</div>
-<img src="QRIS.jpg.jpeg">
-</div>
-
-<footer>
-© 2026 RHN CAPITAL — Investment Platform
-</footer>
-
-<script>
-
-function scrollTo(id){
-document.getElementById(id).scrollIntoView({behavior:'smooth'});
-}
-
-function openQRIS(){
-document.getElementById("qrisPopup").style.display="flex";
-}
-
-function closeQRIS(){
-document.getElementById("qrisPopup").style.display="none";
-}
-
-</script>
-
+        window.onload = function() { renderProduk(); document.getElementById('barcodeInput').focus(); };
+    </script>
 </body>
 </html>
