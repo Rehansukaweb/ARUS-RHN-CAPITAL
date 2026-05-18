@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -81,22 +81,9 @@
         .btn-close-modal { background: var(--dark); color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; }
 
         #printArea { display: none; font-family: 'Courier New', Courier, monospace; color: black; }
-        @media print {
-            body { background: white; margin: 0; padding: 0; }
-            .main-app, .modal-overlay { display: none !important; }
-            #printArea { display: block !important; position: absolute; top: 0; left: 0; width: 300px; padding: 10px; font-size: 12px; }
-            .print-header { text-align: center; margin-bottom: 10px; }
-            .print-header h2 { margin: 0; font-size: 18px; }
-            .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-            .print-table td { padding: 3px 0; }
-            .print-right { text-align: right; }
-            .print-bold { font-weight: bold; }
-            .print-line { border-bottom: 1px dashed black; margin: 8px 0; }
-            .print-footer { text-align: center; font-weight: bold; margin-top: 15px; font-size: 11px; }
-        }
 
-        /* ----- DIPERBARUI: PERBAIKAN TAMPILAN HP AGAR BISA SCROLL & TIDAK KEPOTONG ----- */
-        @media (max-width: 1024px) {
+        /* ----- DIPERBARUI: HANYA BERLAKU DI LAYAR (SCREEN) BUKAN SAAT PRINT ----- */
+        @media screen and (max-width: 1024px) {
             body { 
                 height: auto !important; 
                 overflow-y: auto !important; 
@@ -126,6 +113,21 @@
             .product-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
             .cart-items { min-height: 150px; max-height: 400px; }
             .modal-content { width: 90%; padding: 20px; }
+        }
+
+        /* ----- DIPERBARUI: POSISI PRINT DI BAWAH AGAR MENANG MUTLAK ----- */
+        @media print {
+            body { background: white !important; margin: 0 !important; padding: 0 !important; }
+            .main-app, .modal-overlay { display: none !important; }
+            #printArea { display: block !important; position: absolute; top: 0; left: 0; width: 100%; max-width: 300px; padding: 10px; font-size: 12px; }
+            .print-header { text-align: center; margin-bottom: 10px; }
+            .print-header h2 { margin: 0; font-size: 18px; }
+            .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+            .print-table td { padding: 3px 0; }
+            .print-right { text-align: right; }
+            .print-bold { font-weight: bold; }
+            .print-line { border-bottom: 1px dashed black; margin: 8px 0; }
+            .print-footer { text-align: center; font-weight: bold; margin-top: 15px; font-size: 11px; }
         }
     </style>
 </head>
