@@ -20,22 +20,33 @@
         .header-title h1 { margin: 0; font-size: 24px; color: var(--secondary); text-transform: uppercase; }
         .clock { font-size: 16px; font-weight: bold; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 5px; margin-top: 5px; display: inline-block; }
         
-        .input-group { display: flex; gap: 10px; }
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .barcode-input { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; width: 200px; outline: none; }
         .barcode-input:focus { border-color: var(--secondary); box-shadow: 0 0 5px var(--secondary); }
+        
         .btn-scan { padding: 10px 15px; background: var(--secondary); color: var(--dark); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-scan:hover { background: #e6c800; transform: scale(1.05); }
+        
+        /* Tombol Tambah Barang */
+        .btn-add { padding: 10px 15px; background: var(--success); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-add:hover { background: #218838; transform: scale(1.05); }
 
         #reader-container { display: none; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 2px solid var(--primary); }
         #reader { width: 100%; max-width: 400px; margin: auto; }
         .btn-close-cam { background: var(--danger); color: white; border: none; padding: 10px; width: 100%; margin-top: 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
 
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .product-card { background: white; border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        /* Edit Kartu Produk untuk Tombol Hapus */
+        .product-card { position: relative; background: white; border-radius: 8px; padding: 25px 15px 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .product-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 4px 8px rgba(0,123,255,0.2); }
-        .product-card h3 { font-size: 14px; margin: 10px 0 5px; color: var(--dark); }
+        .product-card h3 { font-size: 14px; margin: 5px 0; color: var(--dark); }
         .product-card p { color: var(--primary); font-weight: bold; margin: 0; font-size: 16px; }
         .product-card small { color: #888; font-size: 11px; }
+
+        /* Tombol Hapus Produk dari Database */
+        .btn-delete-product { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 4px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .btn-delete-product:hover { background: #b02a37; transform: scale(1.1); }
 
         .cart-header { background: var(--dark); color: white; padding: 15px; text-align: center; display: flex; justify-content: space-between; align-items: center; }
         .cart-header h2 { margin: 0; font-size: 18px; }
@@ -53,28 +64,25 @@
         .summary-line { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 15px; }
         .summary-total { font-size: 20px; font-weight: bold; color: var(--danger); border-top: 2px dashed #ccc; padding-top: 10px; margin-top: 5px; }
         
-        /* Area Metode Pembayaran */
         .payment-methods { display: flex; gap: 5px; margin: 10px 0; }
         .pay-option { flex: 1; text-align: center; padding: 8px 5px; border: 2px solid #ddd; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold; background: white; transition: 0.2s; color: #555; }
         .pay-option.active { border-color: var(--primary); background: #e6f2ff; color: var(--primary); }
 
-        /* Konten Pembayaran */
         .pay-content { padding: 10px; border: 1px dashed #ccc; border-radius: 5px; margin-bottom: 10px; background: #fafafa; min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .payment-input { width: 100%; padding: 12px; font-size: 20px; font-weight: bold; border: 2px solid var(--primary); border-radius: 5px; text-align: right; }
+        .input-kiri { text-align: left; font-size: 16px; margin-bottom: 10px; border-color: #ccc; }
+        .input-kiri:focus { border-color: var(--primary); }
         
-        /* Tombol Bayar */
         .btn-pay { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; background: var(--success); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.2s; }
         .btn-pay:hover { background: #218838; }
 
-        /* Pop-Up Sukses & Kembalian */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: popIn 0.3s ease-out; }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-content h2 { color: var(--success); margin-top: 0; font-size: 28px; }
+        .modal-content h2 { margin-top: 0; font-size: 24px; }
         .change-amount { font-size: 40px; font-weight: bold; color: var(--primary); margin: 20px 0; border-bottom: 2px dashed #ccc; padding-bottom: 20px; }
         .btn-close-modal { background: var(--dark); color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; }
 
-        /* AREA PRINT STRUK KASIR */
         #printArea { display: none; font-family: 'Courier New', Courier, monospace; color: black; }
         @media print {
             body { background: white; margin: 0; padding: 0; }
@@ -88,6 +96,19 @@
             .print-bold { font-weight: bold; }
             .print-line { border-bottom: 1px dashed black; margin: 8px 0; }
             .print-footer { text-align: center; font-weight: bold; margin-top: 15px; font-size: 11px; }
+        }
+
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .main-app { flex-direction: column; height: auto; }
+            .left-panel, .right-panel { width: 100%; height: auto; overflow: visible; border: none; }
+            .right-panel { border-top: 3px solid var(--primary); }
+            .header { flex-direction: column; text-align: center; gap: 15px; }
+            .input-group { width: 100%; flex-direction: column; }
+            .barcode-input, .btn-scan, .btn-add { width: 100%; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+            .modal-content { width: 90%; padding: 20px; }
+            .cart-items { min-height: 200px; max-height: 350px; }
         }
     </style>
 </head>
@@ -103,6 +124,8 @@
                 <div class="input-group">
                     <input type="text" id="barcodeInput" class="barcode-input" placeholder="Scan / Ketik Kode..." autofocus autocomplete="off">
                     <button class="btn-scan" onclick="bukaKamera()">📷 Scan Kamera</button>
+                    <!-- Tombol Tambah Barang -->
+                    <button class="btn-add" onclick="bukaModalTambah()">➕ Tambah Barang</button>
                 </div>
             </div>
 
@@ -140,9 +163,7 @@
                 
                 <div class="pay-content" id="area-qris" style="display: none; text-align: center;">
                     <span style="font-size: 11px; margin-bottom:5px; font-weight: bold;">Scan QRIS Asli RHN CAPITAL FINANCE:</span>
-                    
                     <img src="qris.jpg" alt="QRIS RHN Store" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; margin: 5px 0;">
-                    
                     <span style="font-size: 10px; color: #555;">NMID: ID1026489225353</span>
                     <div style="margin-top: 5px; padding: 5px; background: #e6f2ff; border-radius: 5px; width: 100%;">
                         <span style="font-size: 12px; color: #333;">Total yang harus dibayar:</span><br>
@@ -156,12 +177,28 @@
         </div>
     </div>
 
+    <!-- Modal Sukses Pembayaran -->
     <div class="modal-overlay" id="successModal">
         <div class="modal-content">
-            <h2 id="modalTitle">✅ TRANSAKSI SUKSES</h2>
+            <h2 id="modalTitle" style="color: var(--success);">✅ TRANSAKSI SUKSES</h2>
             <p id="modalSubtitle">Uang Kembalian Pelanggan:</p>
             <div class="change-amount" id="changeAmountText">Rp 0</div>
             <button class="btn-close-modal" onclick="tutupModalDanLanjut()">Lanjut Transaksi Berikutnya</button>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Barang Baru -->
+    <div class="modal-overlay" id="tambahBarangModal">
+        <div class="modal-content">
+            <h2 style="color: var(--primary);">➕ Tambah Barang</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Masukkan detail barang baru di bawah ini</p>
+            
+            <input type="text" id="inputKodeBaru" class="payment-input input-kiri" placeholder="Kode Barang / Barcode">
+            <input type="text" id="inputNamaBaru" class="payment-input input-kiri" placeholder="Nama Barang / Makanan">
+            <input type="number" id="inputHargaBaru" class="payment-input input-kiri" placeholder="Harga Jual (Rp)">
+            
+            <button class="btn-pay" style="margin-bottom: 10px; margin-top: 10px;" onclick="simpanBarangBaru()">SIMPAN BARANG</button>
+            <button class="btn-close-modal" onclick="tutupModalTambah()">Batal</button>
         </div>
     </div>
 
@@ -171,7 +208,7 @@
         let keranjang = [];
         let html5QrcodeScanner = null;
         const ppnRate = 0.11;
-        let metodeAktif = 'cash'; // Default Tunai
+        let metodeAktif = 'cash'; 
 
         // Jam Digital
         function updateClock() {
@@ -180,17 +217,22 @@
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // Database Produk (Contoh)
-        const databaseProduk = [
+        // Database Produk (Dengan Tambahan Baru)
+        let databaseProduk = [
             { kode: "89686010023", nama: "Aqua Botol 600ml", harga: 3500, stok: 999 },
             { kode: "08968604321", nama: "Indomie Goreng", harga: 3500, stok: 999 },
             { kode: "003", nama: "Susu Bear Brand", harga: 10500, stok: 999 },
             { kode: "004", nama: "Roti Aoka Coklat", harga: 3000, stok: 999 },
             { kode: "005", nama: "Chitato Sapi 68g", harga: 11000, stok: 999 },
-            { kode: "006", nama: "Kopi Kenangan 220ml", harga: 9500, stok: 999 }
+            { kode: "006", nama: "Kopi Kenangan 220ml", harga: 9500, stok: 999 },
+            { kode: "007", nama: "Teh Pucuk Harum 350ml", harga: 4000, stok: 999 },
+            { kode: "008", nama: "Beng-Beng Coklat", harga: 2500, stok: 999 },
+            { kode: "009", nama: "Nasi Bakar Ayam", harga: 15000, stok: 999 },
+            { kode: "010", nama: "Taro Snack Seaweed", harga: 5500, stok: 999 },
+            { kode: "011", nama: "Pocari Sweat 500ml", harga: 7500, stok: 999 },
+            { kode: "012", nama: "Roti O / Roti Boy", harga: 13000, stok: 999 }
         ];
 
-        // Suara Beep
         function playBeepSound() {
             const context = new (window.AudioContext || window.webkitAudioContext)();
             const osc = context.createOscillator();
@@ -202,7 +244,6 @@
             osc.start(); osc.stop(context.currentTime + 0.08);
         }
 
-        // Suara Google TTS
         function bicarakanTerimaKasih() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -212,21 +253,69 @@
             }
         }
 
-        // Format Uang
         function formatRupiah(angka) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
         }
 
-        // --- FUNGSI GANTI METODE PEMBAYARAN ---
+        // --- FUNGSI TAMBAH BARANG BARU ---
+        function bukaModalTambah() {
+            document.getElementById('tambahBarangModal').style.display = 'flex';
+            document.getElementById('inputKodeBaru').focus();
+        }
+
+        function tutupModalTambah() {
+            document.getElementById('tambahBarangModal').style.display = 'none';
+            document.getElementById('inputKodeBaru').value = '';
+            document.getElementById('inputNamaBaru').value = '';
+            document.getElementById('inputHargaBaru').value = '';
+            document.getElementById('barcodeInput').focus();
+        }
+
+        function simpanBarangBaru() {
+            const kode = document.getElementById('inputKodeBaru').value.trim();
+            const nama = document.getElementById('inputNamaBaru').value.trim();
+            const harga = parseFloat(document.getElementById('inputHargaBaru').value);
+
+            if (kode === "" || nama === "" || isNaN(harga) || harga <= 0) {
+                alert("Harap isi Kode, Nama, dan Harga dengan benar!");
+                return;
+            }
+
+            const cekKode = databaseProduk.find(p => p.kode === kode);
+            if (cekKode) {
+                alert("Kode Barang tersebut sudah digunakan! Masukkan kode yang berbeda.");
+                return;
+            }
+
+            databaseProduk.push({ kode: kode, nama: nama, harga: harga, stok: 999 });
+            renderProduk();
+            tutupModalTambah();
+            alert("✅ Barang Baru Berhasil Ditambahkan!");
+        }
+
+        // --- FUNGSI HAPUS BARANG DARI DATABASE ---
+        function hapusBarangDariSistem(event, kode) {
+            // Mencegah div pembungkus (product-card) ikut ter-klik dan masuk ke keranjang
+            event.stopPropagation(); 
+            
+            if (confirm("Yakin ingin menghapus barang ini secara permanen dari layar?")) {
+                // Filter hapus dari database
+                databaseProduk = databaseProduk.filter(p => p.kode !== kode);
+                
+                // Jika kebetulan barangnya lagi ada di keranjang transaksi, hapus sekalian
+                keranjang = keranjang.filter(item => item.kode !== kode);
+                
+                updateUIKeranjang();
+                renderProduk();
+            }
+        }
+
         function gantiMetodeBayar(metode) {
             metodeAktif = metode;
-            
             document.getElementById('btn-cash').classList.remove('active');
             document.getElementById('btn-qris').classList.remove('active');
-            
             document.getElementById('area-cash').style.display = 'none';
             document.getElementById('area-qris').style.display = 'none';
-
             document.getElementById('btn-' + metode).classList.add('active');
             if (metode === 'cash') {
                 document.getElementById('area-cash').style.display = 'block';
@@ -236,12 +325,14 @@
             }
         }
 
+        // --- RENDER PRODUK (DIUPDATE AGAR MUNCUL TOMBOL X) ---
         function renderProduk() {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = '';
             databaseProduk.forEach(produk => {
                 grid.innerHTML += `
                     <div class="product-card" onclick="tambahKeKeranjang('${produk.kode}')">
+                        <button class="btn-delete-product" onclick="hapusBarangDariSistem(event, '${produk.kode}')" title="Hapus Barang">✖</button>
                         <h3>${produk.nama}</h3>
                         <p>${formatRupiah(produk.harga)}</p>
                         <small>Kode: ${produk.kode}</small>
@@ -294,7 +385,6 @@
             document.getElementById('totalText').innerText = formatRupiah(total);
             document.getElementById('totalText').setAttribute('data-total', total);
             
-            // Update nominal dinamis di bawah logo QRIS
             document.getElementById('qrisAmountText').innerText = formatRupiah(total);
         }
 
@@ -304,7 +394,6 @@
             }
         });
 
-        // Kamera Scanner
         function bukaKamera() {
             document.getElementById('reader-container').style.display = 'block';
             if (!html5QrcodeScanner) html5QrcodeScanner = new Html5Qrcode("reader");
@@ -317,7 +406,6 @@
             else document.getElementById('reader-container').style.display = 'none';
         }
 
-        // --- PROSES PEMBAYARAN ---
         function prosesPembayaran() {
             if (keranjang.length === 0) { alert("Keranjang kosong!"); return; }
             
@@ -333,16 +421,13 @@
                 }
                 kembalian = uangBayar - totalTagihan;
                 teksMetodeStruk = "TUNAI";
-                
                 document.getElementById('modalSubtitle').innerText = "Uang Kembalian Pelanggan:";
                 document.getElementById('changeAmountText').innerText = formatRupiah(kembalian);
 
             } else if (metodeAktif === 'qris') {
-                // Dianggap sudah dibayar pas dengan QRIS
                 uangBayar = totalTagihan;
                 kembalian = 0;
                 teksMetodeStruk = "QRIS / E-WALLET";
-                
                 document.getElementById('modalSubtitle').innerText = "Pembayaran via QRIS Berhasil";
                 document.getElementById('changeAmountText').innerText = "LUNAS";
             }
